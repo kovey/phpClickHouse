@@ -130,7 +130,11 @@ class CurlerRolling
 
         $n = new CurlerResponse();
         $n->_headers = $this->parse_headers_from_curl_response($header);
-        $n->_body = $body;
+        if (isset($n->_headers['content-encoding']) && $n->_headers['content-encoding'] === 'gzip') {
+            $n->_body = gzdecode($body, 2097152);
+        } else {
+            $n->_body = $body;
+        }
         $n->_info = curl_getinfo($oneHandle);
         $n->_error = curl_error($oneHandle);
         $n->_errorNo = curl_errno($oneHandle);
